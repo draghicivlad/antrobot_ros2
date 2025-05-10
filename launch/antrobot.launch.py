@@ -21,9 +21,10 @@ def generate_launch_description():
     rdrive_launch_arg = DeclareLaunchArgument('launch_rdrive', default_value='true', description='Launch rdrive')
     rplidar_launch_arg = DeclareLaunchArgument('launch_rplidar', default_value='true', description='Launch rplidar')
     tf_static_link_launch_arg = DeclareLaunchArgument('launch_tf_static_link', default_value='true', description='Launch tf_static_link')
-    laserscan_to_pointcloud_launch_arg = DeclareLaunchArgument('launch_laserscan_to_pointcloud', default_value='true', description='Launch laserscan_to_pointcloud')
-    kiss_icp_launch_arg = DeclareLaunchArgument('launch_kiss_icp', default_value='true', description='Launch kiss_icp')
+    laserscan_to_pointcloud_launch_arg = DeclareLaunchArgument('launch_laserscan_to_pointcloud', default_value='false', description='Launch laserscan_to_pointcloud')
+    kiss_icp_launch_arg = DeclareLaunchArgument('launch_kiss_icp', default_value='false', description='Launch kiss_icp')
     cartographer_launch_arg = DeclareLaunchArgument('launch_cartographer', default_value='true', description='Launch cartographer')
+    nav2_launch_arg = DeclareLaunchArgument('launch_nav2', default_value='true', description='Launch nav2')
 
     # Include launch files conditionally
     rdrive_launch = IncludeLaunchDescription(
@@ -74,6 +75,14 @@ def generate_launch_description():
         launch_arguments={'namespace': LaunchConfiguration('namespace')}.items()
     )
 
+    nav2_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(FindPackageShare('antrobot_ros').find('antrobot_ros'), 'launch', 'nav2.launch.py')
+        ),
+        condition=IfCondition(LaunchConfiguration('launch_nav2')),
+        launch_arguments={'namespace': LaunchConfiguration('namespace')}.items()
+    )
+
     return LaunchDescription([
         namespace_launch_arg,
         rdrive_launch_arg,
@@ -82,10 +91,12 @@ def generate_launch_description():
         laserscan_to_pointcloud_launch_arg,
         kiss_icp_launch_arg,
         cartographer_launch_arg,
+        nav2_launch_arg,
         rdrive_launch,
         rplidar_launch,
         tf_static_link_launch,
         laserscan_to_pointcloud_launch,
         kiss_icp_launch,
         cartographer_launch,
+        nav2_launch,
     ])
