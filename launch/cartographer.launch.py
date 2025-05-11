@@ -36,7 +36,7 @@ def generate_launch_description():
     cartographer_node = Node(
         package='cartographer_ros',
         executable='cartographer_node',
-        namespace=LaunchConfiguration('namespace'),
+        # namespace=LaunchConfiguration('namespace'),
         name='cartographer_node',
         output='screen',
         parameters=[{
@@ -51,7 +51,7 @@ def generate_launch_description():
     occupancy_grid_node = Node(
         package='cartographer_ros',
         executable='cartographer_occupancy_grid_node',
-        namespace=LaunchConfiguration('namespace'),
+        # namespace=LaunchConfiguration('namespace'),
         name='occupancy_grid_node',
         output='screen',
         parameters=[{
@@ -60,7 +60,8 @@ def generate_launch_description():
         arguments=[
             '-resolution', str(cartographer_params['resolution']),
             '-publish_period_sec', str(cartographer_params['publish_period_sec'])
-        ]
+        ],
+        remappings=[('occupancy_grid', '/map')],
     )
 
     return LaunchDescription([

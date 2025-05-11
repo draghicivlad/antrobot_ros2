@@ -30,9 +30,13 @@ def generate_launch_description():
     rdrive_node = Node(
         package='antrobot_ros',
         executable='rdrive_node',
-        namespace=LaunchConfiguration('namespace'),
+        # namespace=LaunchConfiguration('namespace'),
         name='rdrive_node',
-        parameters=[rdrive_parmas]
+        parameters=[rdrive_parmas],
+        # remappings=[
+        #     ('tf', '/tf'),             # take rdrive’s tf and shove it onto global /tf
+        #     ('tf_static', '/tf_static')
+    # ]
     )
     
     return LaunchDescription([robot_namespace_arg, rdrive_node ])

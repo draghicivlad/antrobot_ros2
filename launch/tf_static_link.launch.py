@@ -34,7 +34,7 @@ def generate_launch_description():
         tf_nodes.append(Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            namespace=LaunchConfiguration('namespace'),
+            # namespace=LaunchConfiguration('namespace'),
             arguments=[
                 '--x', str(transform['translation'][0]),
                 '--y', str(transform['translation'][1]),
@@ -46,7 +46,8 @@ def generate_launch_description():
                 '--child-frame-id', transform['child_frame']
             ],
             name=f"tf_static_publisher_{transform['parent_frame']}_{transform['child_frame']}",
-            output='screen'
+            output='screen',
+            # remappings=[('tf_static', '/tf_static')],
         ))
 
     return LaunchDescription([robot_namespace_arg] + tf_nodes)

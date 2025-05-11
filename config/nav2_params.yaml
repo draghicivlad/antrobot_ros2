@@ -52,7 +52,7 @@ bt_navigator:
     use_sim_time: False  # Use simulated time
     global_frame: map  # Global frame ID
     robot_base_frame: base_link  # Robot base frame ID
-    odom_topic: /odom  # Odometry topic
+    odom_topic: odom  # Odometry topic
     default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"  # Default behavior tree XML file
     bt_loop_duration: 10  # Behavior tree loop duration
     default_server_timeout: 20  # Default server timeout
@@ -188,7 +188,7 @@ local_costmap:
         enabled: True  # Enable obstacle layer
         observation_sources: scan  # Observation sources
         scan:
-          topic: /scan  # Scan topic
+          topic: scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
           clearing: True  # Enable clearing
           marking: True  # Enable marking
@@ -204,7 +204,7 @@ local_costmap:
         mark_threshold: 0  # Mark threshold
         observation_sources: scan  # Observation sources
         scan:
-          topic: /scan  # Scan topic
+          topic: scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
           clearing: True  # Enable clearing
           marking: True  # Enable marking
@@ -240,7 +240,7 @@ global_costmap:
         enabled: True  # Enable obstacle layer
         observation_sources: scan  # Observation sources
         scan:
-          topic: /scan  # Scan topic
+          topic: scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
           clearing: True  # Enable clearing
           marking: True  # Enable marking
@@ -260,7 +260,7 @@ global_costmap:
         mark_threshold: 0  # Mark threshold
         observation_sources: scan  # Observation sources
         scan:
-          topic: /scan  # Scan topic
+          topic: scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
           clearing: True  # Enable clearing
           marking: True  # Enable marking
@@ -287,7 +287,8 @@ global_costmap:
 map_server:
   ros__parameters:
     use_sim_time: False  # Use simulated time
-    yaml_filename: "map.yaml"  # YAML filename
+    subscribe: true
+    topic: "/map"
 
 map_saver:
   ros__parameters:
