@@ -17,10 +17,10 @@ include "trajectory_builder.lua"
 options = {
   map_builder = MAP_BUILDER,  
   trajectory_builder = TRAJECTORY_BUILDER,  
-  map_frame = "map",  -- The frame in which the map is published
-  tracking_frame = "base_footprint",  -- The frame used for tracking the robot's pose
-  published_frame = "base_footprint",  -- The frame in which the pose is published by cartographer
-  odom_frame = "odom",  -- The frame in which odometry is provided
+  map_frame       = "map",
+  tracking_frame  = "antrobot1_base_footprint",
+  published_frame = "antrobot1_base_footprint",
+  odom_frame      = "antrobot1_odom",
   provide_odom_frame = true,  -- Whether Cartographer should publish the odometry frame ( we're already providing it)
   publish_frame_projected_to_2d = true,  -- Whether or not to project the published frame to 2D (yes when using 2D lidars)
   use_odometry = false,  -- Whether or not to use odometry data (yes where provinging it externally)

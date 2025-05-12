@@ -35,7 +35,7 @@ def generate_launch_description():
             package='antrobot_ros',
             executable='laserscan_to_pointcloud_node',
             name='laserscan_to_pointcloud',
-            namespace=LaunchConfiguration('namespace'),
+            # namespace=LaunchConfiguration('namespace'),
             output='screen',
             parameters=[params]
         )

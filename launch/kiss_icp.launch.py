@@ -32,7 +32,7 @@ def generate_launch_description():
     kiss_icp_node = Node(
         package='kiss_icp',
         executable='kiss_icp_node',
-        namespace=LaunchConfiguration('namespace'),
+        # namespace=LaunchConfiguration('namespace'),
         name='kiss_icp',
         output='screen',
         parameters=[kiss_icp_params],

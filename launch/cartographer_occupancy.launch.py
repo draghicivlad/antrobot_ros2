@@ -1,18 +1,16 @@
-# Copyright (C) 2025 Dan Novischi.
-# This software may be modified and distributed under the terms of the
-# GNU Lesser General Public License v3 or any later version.
+# launch/cartographer_occupancy.launch.py
 
 import os
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, TextSubstitution
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from antrobot_ros.utils import load_node_params
 
 def generate_launch_description():
-    # 1) Robot namespace (e.g. "antrobot1")
+    # declare namespace so we get the right YAML params
     namespace_arg = DeclareLaunchArgument(
         'namespace',
         default_value='',
@@ -20,31 +18,28 @@ def generate_launch_description():
     )
     ns = LaunchConfiguration('namespace')
 
-    # 2) Load Cartographer parameters from YAML
+    # load your resolution & publish_period from antrobot_params.yaml
     pkg_share = get_package_share_directory('antrobot_ros')
     cfg_path = os.path.join(pkg_share, 'config', 'antrobot_params.yaml')
     carto_params = load_node_params(cfg_path, 'cartographer')
-    lua_file = os.path.join(pkg_share, 'config', carto_params['config_file'])
 
-    # 3) SLAM node: still under /<namespace>, reads namespaced scan & odom,
-    #    writes submaps internally
-    carto_node = Node(
+    occ_node = Node(
         package='cartographer_ros',
-        executable='cartographer_node',
-        name='cartographer_node',
+        executable='cartographer_occupancy_grid_node',
+        name='occupancy_grid_node',
         output='screen',
         parameters=[{'use_sim_time': False}],
         arguments=[
-            '-configuration_directory', os.path.dirname(lua_file),
-            '-configuration_basename',    os.path.basename(lua_file),
+            '-resolution',         str(carto_params['resolution']),
+            '-publish_period_sec', str(carto_params['publish_period_sec']),
         ],
         remappings=[
-            ('scan', 'scan'),  # → /<namespace>/scan
-            ('odom', 'odom'),  # → /<namespace>/odom
+            # publish occupancy on the *global* /map:
+            ('occupancy_grid', '/map'),
         ],
     )
 
     return LaunchDescription([
         namespace_arg,
-        carto_node,
+        occ_node,
     ])

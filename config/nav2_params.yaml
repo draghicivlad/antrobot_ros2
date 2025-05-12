@@ -6,7 +6,7 @@ amcl:
     alpha3: 0.2  # Odometry translation noise in rotation
     alpha4: 0.2  # Odometry rotation noise in translation
     alpha5: 0.2  # Odometry noise in rotation and translation
-    base_frame_id: "base_footprint"  # Robot base frame ID
+    base_frame_id: "antrobot1_base_footprint"  # Robot base frame ID
     beam_skip_distance: 0.5  # Distance to skip beams
     beam_skip_error_threshold: 0.9  # Error threshold for beam skipping
     beam_skip_threshold: 0.3  # Threshold for beam skipping
@@ -20,7 +20,7 @@ amcl:
     max_beams: 60  # Max number of beams
     max_particles: 2000  # Max number of particles
     min_particles: 500  # Min number of particles
-    odom_frame_id: "odom"  # Odometry frame ID
+    odom_frame_id: "antrobot1_odom"  # Odometry frame ID
     pf_err: 0.05  # Particle filter error
     pf_z: 0.99  # Particle filter z value
     recovery_alpha_fast: 0.0  # Fast recovery alpha
@@ -51,8 +51,8 @@ bt_navigator:
   ros__parameters:
     use_sim_time: False  # Use simulated time
     global_frame: map  # Global frame ID
-    robot_base_frame: base_link  # Robot base frame ID
-    odom_topic: odom  # Odometry topic
+    robot_base_frame: antrobot1_base_footprint  # Robot base frame ID
+    odom_topic: antrobot1_odom  # Odometry topic
     default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"  # Default behavior tree XML file
     bt_loop_duration: 10  # Behavior tree loop duration
     default_server_timeout: 20  # Default server timeout
@@ -170,14 +170,19 @@ local_costmap:
     ros__parameters:
       update_frequency: 5.0  # Update frequency
       publish_frequency: 2.0  # Publish frequency
-      global_frame: odom  # Global frame ID
-      robot_base_frame: base_link  # Robot base frame ID
+      global_frame: antrobot1_odom  # Global frame ID
+      robot_base_frame: antrobot1_base_footprint  # Robot base frame ID
+      laser_frame_id: antrobot1_laser_link
+      transform_tolerance: 0.25    # how long to wait for the TF [s]
+      tf_buffer_duration: 20.0
       use_sim_time: False  # Use simulated time
       rolling_window: true  # Enable rolling window
-      width: 2  # Width of the costmap
-      height: 2  # Height of the costmap
+      width: 3  # Width of the costmap
+      height: 3  # Height of the costmap
       resolution: 0.05  # Resolution of the costmap
-      robot_radius: 0.1  # Robot radius
+      track_unknown_space: true
+      always_send_full_costmap: true  # Always send full costmap
+      robot_radius: 0.23  # Robot radius
       plugins: ["obstacle_layer", "voxel_layer", "inflation_layer"]  # List of plugins
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"  # Inflation layer plugin
@@ -187,9 +192,11 @@ local_costmap:
         plugin: "nav2_costmap_2d::ObstacleLayer"  # Obstacle layer plugin
         enabled: True  # Enable obstacle layer
         observation_sources: scan  # Observation sources
+        min_obstacle_height: -0.4
         scan:
-          topic: scan  # Scan topic
+          topic: /antrobot1/scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
+          min_obstacle_height: -0.4
           clearing: True  # Enable clearing
           marking: True  # Enable marking
           data_type: "LaserScan"  # Data type
@@ -201,11 +208,13 @@ local_costmap:
         z_resolution: 0.05  # Z resolution
         z_voxels: 16  # Number of z voxels
         max_obstacle_height: 2.0  # Max obstacle height
+        min_obstacle_height: -0.4
         mark_threshold: 0  # Mark threshold
         observation_sources: scan  # Observation sources
         scan:
-          topic: scan  # Scan topic
+          topic: /antrobot1/scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
+          min_obstacle_height: -0.4
           clearing: True  # Enable clearing
           marking: True  # Enable marking
           data_type: "LaserScan"  # Data type
@@ -213,9 +222,6 @@ local_costmap:
           raytrace_min_range: 0.0  # Raytrace min range
           obstacle_max_range: 2.5  # Obstacle max range
           obstacle_min_range: 0.0  # Obstacle min range
-      static_layer:
-        map_subscribe_transient_local: True  # Map subscribe transient local
-      always_send_full_costmap: True  # Always send full costmap
   local_costmap_client:
     ros__parameters:
       use_sim_time: False  # Use simulated time
@@ -229,9 +235,9 @@ global_costmap:
       update_frequency: 1.0  # Update frequency
       publish_frequency: 1.0  # Publish frequency
       global_frame: map  # Global frame ID
-      robot_base_frame: base_link  # Robot base frame ID
+      robot_base_frame: antrobot1_base_footprint  # Robot base frame ID
       use_sim_time: True  # Use simulated time
-      robot_radius: 0.1  # Robot radius
+      robot_radius: 0.23  # Robot radius
       resolution: 0.05  # Resolution of the costmap
       track_unknown_space: true  # Track unknown space
       plugins: ["static_layer", "obstacle_layer", "voxel_layer", "inflation_layer"]  # List of plugins
@@ -240,7 +246,7 @@ global_costmap:
         enabled: True  # Enable obstacle layer
         observation_sources: scan  # Observation sources
         scan:
-          topic: scan  # Scan topic
+          topic: /antrobot1/scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
           clearing: True  # Enable clearing
           marking: True  # Enable marking
@@ -260,7 +266,7 @@ global_costmap:
         mark_threshold: 0  # Mark threshold
         observation_sources: scan  # Observation sources
         scan:
-          topic: scan  # Scan topic
+          topic: /antrobot1/scan  # Scan topic
           max_obstacle_height: 2.0  # Max obstacle height
           clearing: True  # Enable clearing
           marking: True  # Enable marking
@@ -288,7 +294,6 @@ map_server:
   ros__parameters:
     use_sim_time: False  # Use simulated time
     subscribe: true
-    topic: "/map"
 
 map_saver:
   ros__parameters:
@@ -325,8 +330,8 @@ recoveries_server:
       plugin: "nav2_recoveries/BackUp"  # Backup recovery plugin
     wait:
       plugin: "nav2_recoveries/Wait"  # Wait recovery plugin
-    global_frame: odom  # Global frame ID
-    robot_base_frame: base_link  # Robot base frame ID
+    global_frame: antrobot1_odom  # Global frame ID
+    robot_base_frame: antrobot1_base_footprint  # Robot base frame ID
     transform_timeout: 0.1  # Transform timeout
     use_sim_time: true  # Use simulated time
     simulate_ahead_time: 2.0  # Simulate ahead time
